@@ -1,0 +1,41 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#"  #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core"#>
+<#@ import namespace="System"#>
+<#@ import namespace="System.Collections.Generic"#>
+<#@ include file="../01 Templates/DBSchema.ttinclude"#>
+<#@ include file="../01 Templates/MultiDocument.ttinclude"#>
+<# var manager = new Manager(Host, GenerationEnvironment, true) { OutputPath = Path.GetDirectoryName(Host.TemplateFile)}; #>
+<#
+    var dbSchema=DBSchemaFactory.GetDBSchema();
+    List<string> tableList=dbSchema.GetTablesList();
+    foreach(string tableName in tableList)
+    {
+        manager.StartBlock(tableName+".cs");
+        Table table=dbSchema.GetTableMetadata(tableName);
+#>
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace NEO.Core
+{
+    public class <#=tableName#>
+    {
+<#
+        foreach(Column c in table.Columns)
+        {
+#>
+        public <#=GeneratorHelper.GetQuesMarkByType(c.TypeName)#> <#=c.UpColumnName#> { get; set; }
+<#
+        }
+#>
+    }
+}
+<#
+        manager.EndBlock();
+    }
+    dbSchema.Dispose();
+
+    manager.Process(true);
+#>

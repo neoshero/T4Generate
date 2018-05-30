@@ -1,0 +1,50 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#"  #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core"#>
+<#@ import namespace="System"#>
+<#@ import namespace="System.Collections.Generic"#>
+<#@ include file="../01 Templates/DBSchema.ttinclude"#>
+<#@ include file="../01 Templates/MultiDocument.ttinclude"#>
+<# var manager = new Manager(Host, GenerationEnvironment, true) { OutputPath = Path.GetDirectoryName(Host.TemplateFile)}; #>
+<#
+    var dbSchema=DBSchemaFactory.GetDBSchema();
+    List<string> tableList=dbSchema.GetTablesList();
+    foreach(string tableName in tableList)
+    {
+        manager.StartBlock(tableName+"Service.cs");
+        Table table=dbSchema.GetTableMetadata(tableName);
+#>
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace NEO.Core
+{
+    public class <#=tableName#>Service:BaseService<<#= tableName#>>
+    {
+		public BaseResponse Create(<#= tableName#> entity)
+		{
+			BaseResponse response = new BaseResponse();
+
+			return response;
+		}
+
+		public BaseResponse Modify(<#= tableName#> entity)
+		{
+			BaseResponse response = new BaseResponse();
+
+			return response;
+		}
+
+		public Pager<<#= tableName#>> GetPage()
+		{
+		}
+    }
+}
+<#
+    manager.EndBlock();
+    }
+    dbSchema.Dispose();
+
+    manager.Process(true);
+#>
