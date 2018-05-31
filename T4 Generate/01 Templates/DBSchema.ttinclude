@@ -199,11 +199,27 @@
         public string TypeName { 
             get 
             {
-                string result = string.Empty;
-                if (this.columnBase.DataType.Name == "Guid")//for mysql,因为对于MYSQL如果是CHAR(36),类型自动为Guid
-                    result = "string";
-                else
-                    result = this.columnBase.DataType.Name;
+               	string result = string.Empty;
+		string typeName = this.columnBase.DataType.Name;
+		switch(typeName){
+			case "Guid": result = "string";break;
+			case "Int16": result = "short";break;
+			case "Int32": result = "int";break;
+			case "Int64": result = "long";break;
+			case "Boolean": result = "bool";break;
+			case "DateTime": result = "DateTime";break;
+			case "Char": result = "char";break;
+			case "String": result = "string";break;
+			case "Decimal": result = "decimal";break;
+			case "Double": result = "double";break;
+			case "Byte": result = "byte";break;
+			default : result = typeName; break;
+		}
+
+                if(AllowDBNull && result != "string"){
+			result += "?";
+		}
+
                 return result; 
             } 
         }
